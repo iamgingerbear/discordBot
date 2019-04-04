@@ -13,63 +13,63 @@ dbUrl: you'll need a database https://mlab.com/ offers 500mb free, most servers 
 
 ping:
 test command to see if i am still awake
-kanna ping
+<prefix> ping
 
 translate:
 translates a word or phrase into a target language.
-kanna translate <language code> <phrase>
+<prefix> translate <language code> <phrase>
 
 ### notes:
 #### pin: <br>
 pin something to a channel<br>
 Seperate the title and message with a comma
 ```
-kanna pin <title>, <text>
+<prefix> pin <title>, <text>
 ```
 
 #### pins:
 lists pins that are in the current channel<br>
 Seperate the title and message with a comma
 ```
-kanna pins
+<prefix> pins
 ```
 
 #### create:
 creates a note tied to your username.<br>
 Seperate the title and message with a comma
 ```
-kanna create <title>, <note>
+<prefix> create <title>, <note>
 ```
 
 #### edit:
 updates one of your notes<br>
 Seperate the title and message with a comma
 ```
-kanna edit <title>, <updated note>
+<prefix> edit <title>, <updated note>
 ```
 
 #### read:
 replies with saved note or pin
 ```
-kanna read <pin / note> <title>
+<prefix> read <pin / note> <title>
 ```
 
 #### delete:
 deletes a pin or note
 ```
-kanna delete <pin / note> <title>
+<prefix> delete <pin / note> <title>
 ```
 
 #### list:
 lists all the titles of your notes
 ```
-kanna list
+<prefix> list
 ```
 
 #### reminder:
 sets a reminder for kanna to pm you at a given time
 ```
-kanna reminder <days till reminder> <time in 00:00 format> <reminder messasge>
+<prefix> reminder <days till reminder> <time in 00:00 format> <reminder messasge>
   ```
 
 ### voice:
@@ -77,72 +77,72 @@ kanna reminder <days till reminder> <time in 00:00 format> <reminder messasge>
 #### join:
 joins the voice channel of the user
 ```
-kanna join
+<prefix> join
 ```
 
 #### play:
 plays the youtube video. Adds the video to a queue then plays it. Will join channel if not in one already.
 ```
-kanna play <url / playlist title>
+<prefix> play <url / playlist title>
 ```
 
 #### playing:
 replies with the title and a link to the video that is currently playing
 ```
-kanna playing
+<prefix> playing
 ```
 
 #### volume:
 sets the volume of the current broadcast  
 ```
- kanna volume <0 - 200>
+ <prefix> volume <0 - 200>
  ```
 
 #### queue:
 adds a song or playlist to the queue
 ```
-kanna queue <url / playlist title>
+<prefix> queue <url / playlist title>
 ```
 
 #### skip:
 skips to the next song in the queue
 ```
-kanna skip
+<prefix> skip
 ```
 
 #### pause:
 pauses the broadcast
 ```
-kanna pause
+<prefix> pause
 ```
 
 #### resume:
 resumes the broadcast
 ```
-kanna resume
+<prefix> resume
 ```
 
 #### stop:
 ends the broadcast
 ```
-kanna stop
+<prefix> stop
 ```
 
 #### leave:
 from voice channel disconnects.
 ```
-kanna leave
+<prefix> leave
 ```
 
 #### playlist:
-kanna will add to a playlist, or create one if the title doesn't exist
+the bot will add to a playlist, or create one if the title doesn't exist
 ```
-kanna playlist <playlist title> <url>
+<prefix> playlist <playlist title> <url>
   ```
 
 alternatively, she can list the videos in a playlist.
 ```
-kanna playlist <playlist title>
+<prefix> playlist <playlist title>
   ```
 
 
