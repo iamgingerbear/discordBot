@@ -153,6 +153,7 @@ client.on('message', msg => {
                 break
 
             case 'reminder':
+                commands.reminder.reminder(msg, args)
                 break
 
             case 'help':
