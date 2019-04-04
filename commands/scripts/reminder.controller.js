@@ -22,7 +22,7 @@ for (m in daysInMonth) {
     months.push(m)
 }
 
-reminderDb.createReminder = function(msg, args, res) {
+reminderDb.reminder = function(msg, args, res) {
     // kanna reminder please remind me to do stuff tomorrow 13:20
     let remindTime = args[1]
     let remindDay = args[0]
