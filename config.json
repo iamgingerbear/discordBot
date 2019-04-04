@@ -1,0 +1,9 @@
+{
+    "prefix": "test",
+    "token": "Token here",
+    "approvedChannels": ["channelId here"],
+    "admin": ["you're id here"],
+    "googleApiProjectId": "google cloud api project id",
+    "dbUrl": "db url",
+    "saveTimer": 5
+}
