@@ -3,10 +3,12 @@ const voice = require('./voice.commands')
 const note = require('./note.controller')
 const pin = require('./pin.controller')
 const reminder = require('./reminder.controller')
+const help = require('./help')
 const config = require('../../config.json')
 const db = require('../database/db-base')
 const fs = require('fs')
 
+//start db
 db()
 
 let commands = {}
@@ -16,12 +18,14 @@ commands.voice = voice
 commands.note = note
 commands.pin = pin
 commands.reminder = reminder
+commands.help = help
 commands.commandList = []
     .concat(Object.keys(utility))
     .concat(Object.keys(voice))
     .concat(Object.keys(note))
     .concat(Object.keys(pin))
     .concat(Object.keys(reminder))
+    .concat(Object.keys(help))
 
 module.exports = commands
 
