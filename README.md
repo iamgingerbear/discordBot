@@ -11,13 +11,19 @@ dbUrl: you'll need a database https://mlab.com/ offers 500mb free, most servers 
 
 ## current commands:
 
-ping:
+#### ping:
 test command to see if i am still awake
 <prefix> ping
 
-translate:
+#### translate:
 translates a word or phrase into a target language.
 <prefix> translate <language code> <phrase>
+
+#### reminder:
+sets a reminder for kanna to pm you at a given time
+```
+<prefix> reminder <days till reminder> <time in 00:00 format> <reminder messasge>
+  ```
 
 ### notes:
 #### pin: <br>
@@ -65,13 +71,6 @@ lists all the titles of your notes
 ```
 <prefix> list
 ```
-
-#### reminder:
-sets a reminder for kanna to pm you at a given time
-```
-<prefix> reminder <days till reminder> <time in 00:00 format> <reminder messasge>
-  ```
-
 ### voice:
 
 #### join:
