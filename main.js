@@ -20,6 +20,7 @@ client.on("message", msg => {
     let args = msg.content.split(" ");
 
     // converting the prefix to lower case so that phone users don't get annoyed by the auto capitilsation, shifting here to remove the prefix from args
+    if (args.length == 1) return;
     let prefix = args.shift().toLowerCase();
 
     // if message doesn't start with the prefix ignore it
