@@ -4,6 +4,7 @@ const commands = require("./commands/scripts/commands");
 const config = commands.config;
 const fs = require("fs");
 const Reminder = require("./commands/database/models/reminder.model");
+const react = require("./commands/scripts/react");
 
 const client = new Discord.Client();
 
@@ -15,8 +16,6 @@ client.on("ready", () => {
 client.on("message", msg => {
   // discard any message that is from the bot
   if (msg.author.id != client.user.id) {
-    // react.random(msg)
-
     // split the message up into an array of strings so it's easier to deal with
     let args = msg.content.split(" ");
 
@@ -29,16 +28,11 @@ client.on("message", msg => {
     // doing the same with commands, just in case. shifting here to remove the command from args
     let command = args.shift().toLowerCase();
 
-    // check to see if the command is valid
-    if (commands.commandList.indexOf(command) == -1) {
-      msg.reply(`Sorry, thats not a command.`);
-    }
-
     // this will add a channel for commands to be called in, this is saved in the config file so can be edited manually
     // admins require manual adding of the admin id
     if (command === "addchannel" && config.admin.indexOf(msg.author.id) != -1) {
       // check that the channel isn't already approved
-      if (config.approvedChannels.indexOf(msg.channel.id) != -1) {
+      if (config.approvedChannels.indexOf(msg.channel.id) == -1) {
         // push the channel id to the approvedChannels array
         config.approvedChannels.push(msg.channel.id);
 
@@ -47,14 +41,21 @@ client.on("message", msg => {
           if (err) throw err;
         });
         msg.reply("Channel added");
+        return;
       } else {
         msg.reply(`I'm already allowed in here!`);
+        return;
       }
+    }
+
+    // check to see if the command is valid
+    if (commands.commandList.indexOf(command) == -1) {
+      msg.reply(`Sorry, thats not a command.`);
     }
 
     // ignore any message that isn't in the approvedChannels array
     if (config.approvedChannels.indexOf(msg.channel.id) === -1) return;
-
+    react.random(msg);
     switch (command) {
       case "ping":
         commands.utility.ping(msg);
