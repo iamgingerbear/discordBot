@@ -1,18 +1,19 @@
-const { RichEmbed } = require("discord.js");
-const playlists = require("./playlists.json");
-const ytdl = require("ytdl-core");
-const fs = require("fs");
-const config = require("../../config.json");
+const { RichEmbed } = require('discord.js');
+const playlists = require('./playlists.json');
+const ytdl = require('ytdl-core');
+const fs = require('fs');
+const config = require('../../config.json');
 
 const voice = {};
 
 voice.setVolume = 10; // change this to adjust default volume
 voice.Queue = [];
 voice.QueueList = [];
-voice.songLink = "";
-voice.server = "";
-voice.dispatcher = "";
-voice.connection = "";
+voice.songLink = '';
+voice.server = '';
+voice.dispatcher = '';
+voice.connection = '';
+voice.repeat = '';
 
 voice.join = async (msg, args) => {
   // check the user is in a voice channel before joining
@@ -22,7 +23,7 @@ voice.join = async (msg, args) => {
       msg.reply(`I'm here!`);
 
       // check if the user wanted to start a broadcast
-      if (args[0] == "play") {
+      if (args[0] == 'play') {
         if (args[1]) {
           // check if the 'link' was a playlist
           if (Object.keys(playlists).indexOf(args[1]) != -1) {
@@ -36,6 +37,13 @@ voice.join = async (msg, args) => {
             }
             // else check that the 'link' is a valid youtube url
           } else if (ytdl.validateURL(args[1])) {
+            //check if args[2] is repeat
+            if (args[2]) {
+              if (args[2] == 'repeat') {
+                voice.repeat = args[1];
+              }
+            }
+
             // add it to the queue and push it's title to the queue list
             voice.Queue.push(args[1]);
             ytdl.getBasicInfo(args[1], (err, info) => {
@@ -47,18 +55,18 @@ voice.join = async (msg, args) => {
               }
             });
           } else {
-            msg.reply("did you type it in properly?");
+            msg.reply('did you type it in properly?');
             return;
           }
           // start the broadcast
           voice.play(msg);
         } else {
-          msg.reply("Please tell me what you want to be played");
+          msg.reply('Please tell me what you want to be played');
         }
       }
     });
   } else {
-    msg.reply("Please join a channel first");
+    msg.reply('Please join a channel first');
   }
 };
 
@@ -70,8 +78,8 @@ voice.play = async msg => {
       // start the dispatcher using ytdl to stream a youtube video/stream
       voice.dispatcher = voice.server.dispatcher = await voice.connection.playStream(
         ytdl(voice.Queue[0], {
-          quality: "lowestvideo",
-          filter: "audio",
+          quality: 'lowestvideo',
+          filter: 'audio',
           liveBuffer: 60000
         })
       );
@@ -79,8 +87,11 @@ voice.play = async msg => {
       console.error(error);
     }
     // set playing to the queue's link, to cycle the queue to be ready for the next song
-    voice.songLink = await voice.Queue.shift();
-
+    if (voice.repeat == '') {
+      voice.songLink = await voice.Queue.shift();
+    } else {
+      voice.songLink = voice.Queue[0];
+    }
     // get the info of the song that is currently playing
     ytdl.getBasicInfo(voice.songLink, (err, info) => {
       if (err) {
@@ -93,24 +104,32 @@ voice.play = async msg => {
 
     // set the volume for the dispatcher to the default
     voice.dispatcher.setVolume(voice.setVolume / 100);
+    if (voice.repeat != '') {
+      voice.Queue[0] = voice.repeat;
+    }
   } else {
-    // if there's notingthing in the queue then stop the broadcast
+    // if there's nothing in the queue then stop the broadcast
     voice.dispatcher.end();
   }
 
   // when a song finishes it'll trigger an 'end' event.
-  voice.dispatcher.on("end", () => {
+  voice.dispatcher.on('end', () => {
     // remove the song title from the queue list
-    voice.QueueList.shift();
+    if (voice.repeat == '') {
+      voice.QueueList.shift();
+    } else {
+      voice.Queue[0] = voice.repeat;
+    }
     try {
       // check if there's a song in the queue
       if (voice.Queue[0]) {
+        console.log('repeating the song!');
         // play it
         voice.play(msg);
       } else {
         // end the broadcast
-        msg.channel.send("Ending the broadcast");
-        voice.dispatcher = "";
+        msg.channel.send('Ending the broadcast');
+        voice.dispatcher = '';
       }
     } catch (err) {
       console.error(err);
@@ -128,13 +147,13 @@ voice.playing = msg => {
 voice.volume = (msg, args) => {
   voice.setVolume = parseInt(args[0]);
   voice.dispatcher.setVolume(voice.setVolume / 100);
-  msg.reply("volume is now set to: " + args[0]);
+  msg.reply('volume is now set to: ' + args[0]);
 };
 
 // pauses a broadcast
 voice.pause = msg => {
   // if there is a dispatcher in progress then pause the broadcast
-  if (voice.dispatcher == "") {
+  if (voice.dispatcher == '') {
     msg.reply(`I'm not playing anything`);
   } else {
     voice.dispatcher.pause();
@@ -144,7 +163,7 @@ voice.pause = msg => {
 // resumes a broadcast
 voice.resume = msg => {
   // if there is a dispatcher in progress then resume the broadcast
-  if (voice.dispatcher == "") {
+  if (voice.dispatcher == '') {
     msg.reply(`I've got nothing to play...`);
   } else {
     voice.dispatcher.resume();
@@ -153,32 +172,34 @@ voice.resume = msg => {
 
 // skip to next song in queue
 voice.skip = msg => {
-  if (voice.dispatcher == "") {
+  if (voice.dispatcher == '') {
     msg.reply(`I'm not playing anything`);
   } else {
-    // trigger the end envent to cycle to next song
+    // trigger the end event to cycle to next song
     voice.dispatcher.end();
   }
 };
 // leave a voice connection
 voice.leave = msg => {
   // if there is a dispatcher in progress then disconnect and reset the queue
-  if (voice.dispatcher == "") {
+  if (voice.dispatcher == '') {
     msg.reply(`I'm not in a channel`);
   } else {
     voice.Queue = [];
     voice.QueueList = [];
+    voice.repeat = '';
     msg.guild.voiceConnection.disconnect();
   }
 };
 // stop a broadcast
 voice.stop = msg => {
   // if there is a dispatcher in progress then stop it and reset the queue
-  if (voice.dispatcher == "") {
+  if (voice.dispatcher == '') {
     msg.reply(`I'm not playing anything...`);
   } else {
     voice.Queue = [];
     voice.QueueList = [];
+    voice.repeat = '';
     voice.dispatcher.end();
   }
 };
@@ -209,10 +230,10 @@ voice.playlist = async (msg, args) => {
     } else {
       if (playlists[pName]) {
         // send an embed containing the first 10 titles of the playlist
-        let text = playlists[pName].titles.slice(0, 10).join("\n\n");
+        let text = playlists[pName].titles.slice(0, 10).join('\n\n');
 
         const embed = new RichEmbed()
-          .setTitle("Playlist: " + pName)
+          .setTitle('Playlist: ' + pName)
           .setColor(0xff0000)
           .setDescription(text);
         msg.channel.send(embed);
@@ -220,9 +241,9 @@ voice.playlist = async (msg, args) => {
     }
   } else {
     // if there are no arguments then send a message containing all the playlist names
-    let text = Object.keys(playlists).join(" \n");
+    let text = Object.keys(playlists).join(' \n');
     let embed = new RichEmbed()
-      .setTitle("Playlists")
+      .setTitle('Playlists')
       .setColor(0xff0000)
       .setDescription(text);
     msg.reply(embed);
@@ -231,11 +252,11 @@ voice.playlist = async (msg, args) => {
 // queue song/playlist
 voice.queue = async (msg, args) => {
   let pName = args[0];
-  if (pName === "list") {
+  if (pName === 'list') {
     // lists the first five songs in the queue
-    let text = "";
+    let text = '';
     if (voice.QueueList.length != 0) {
-      text = "\n" + voice.QueueList.slice(0, 5).join(`\n\n`);
+      text = '\n' + voice.QueueList.slice(0, 5).join(`\n\n`);
       msg.reply(text);
     } else {
       msg.reply(`there isn't anything in the list`);
@@ -247,9 +268,9 @@ voice.queue = async (msg, args) => {
     msg.reply(`added ${pName} to the queue`);
   } else if (ytdl.validateURL(pName)) {
     // check if pName is a youtube url, if so queue it
-    if (voice.dispatcher == "") {
+    if (voice.dispatcher == '') {
       // check if there is a dipatcher active, if not then play the song instead
-      args.unshift("play");
+      args.unshift('play');
       voice.join(msg, args);
     } else {
       // add the song to the queue and add the title to the queue list
@@ -263,16 +284,16 @@ voice.queue = async (msg, args) => {
       });
     }
   } else {
-    msg.reply("did you type it in correctly?");
+    msg.reply('did you type it in correctly?');
   }
 };
 module.exports = voice;
 
 // save playlists every playlists.saveTimer
 setInterval(() => {
-  console.log("saving playlists");
+  console.log('saving playlists');
   fs.writeFile(
-    "./commands/scripts/playlists.json",
+    './commands/scripts/playlists.json',
     JSON.stringify(playlists),
     err => {
       if (err) throw err;
